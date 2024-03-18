@@ -16,8 +16,8 @@ app.use("/api", postRoute);
 app.use("/api/ev", evRoute);
 
 
-
-app.listen(3000 ,async () => {
+const port = process.env.PORT
+app.listen(port ,async () => {
   await connect_DB();
   console.log("Server running on port 3000");
 });
