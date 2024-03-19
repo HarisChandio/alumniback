@@ -13,13 +13,15 @@ route.post("/job/post", authenticate, async (req, res) => {
       salary: req.body.salary,
       description: req.body.description,
       companyLogo: req.body.companyLogo,
-      createdBy: req.user._id,
+      createdBy: req.id,
     });
     const job = await newJob.save();
-    const user = await User.findById(req.body.createdBy);
+    const user = await User.findById(req.id);
     user.postedJobs.push(job._id);
+    await user.save();
     return res.status(200).json(job);
   } catch (error) {
+    console.log(error);
     return res.status(500).json(error);
   }
 });
@@ -47,6 +49,47 @@ route.get("/job/get/:id", async (req, res) => {
   }
 });
 
+// route.get("/job/bulk", async (req, res) => {
+//   try {
+//     const filter = req.query.filter;
+
+//     // Constructing regex pattern for case-insensitive matching
+//     // Query to find jobs matching any of the specified fields
+//     const jobs = await Job.find({
+//       $or: [
+//         {
+//           title: {
+//             $regex: filter,
+//             $options: "i",
+//           },
+//         },
+//         {
+//           description: {
+//             $regex: filter,
+//             $options: "i",
+//           },
+//         },
+//         {
+//           company: {
+//             $regex: filter,
+//             $options: "i",
+//           },
+//         },
+//         {
+//           location: {
+//             $regex: filter,
+//             $options: "i",
+//           },
+//         },
+//       ],
+//     }); 
+
+//     res.status(200).json(jobs);
+//   } catch (error) {
+//     console.log(error)
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 //apply for job with jobId, by user Id
 route.post("/job/apply/:id", authenticate, async (req, res) => {
