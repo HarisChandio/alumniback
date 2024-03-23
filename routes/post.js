@@ -2,7 +2,7 @@ const route = require("express").Router();
 const Job = require("../db/models/job");
 const User = require("../db/models/user");
 const authenticate = require("../middlewares/authenticator");
-
+const Volunteer = require("../db/models/volunteer");
 //post job
 route.post("/job/post", authenticate, async (req, res) => {
   try {
@@ -82,7 +82,7 @@ route.get("/job/get/:id", async (req, res) => {
 //           },
 //         },
 //       ],
-//     }); 
+//     });
 
 //     res.status(200).json(jobs);
 //   } catch (error) {
@@ -136,4 +136,24 @@ route.get("/job/get/applicants/:id", authenticate, async (req, res) => {
   }
 });
 
+route.post("/volunteer", async (req, res) => {
+  try {
+    const { name, email, phoneNumber, reason } = req.body;
+    const volunteer = new Volunteer({
+      name,
+      email,
+      phoneNumber,
+      reason,
+    });
+    await volunteer.save();
+    return res.status(200).json({
+      msg: "Volunteered successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      msg: "server error",
+    });
+  }
+});
 module.exports = route;
